@@ -23,8 +23,9 @@ contract DecentralizedLottery {
     }
     
     function random() private view returns (uint) {
-        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players.length)));
+        return uint(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, players.length)));
     }
+
     
     function pickWinner() public restricted {
         require(players.length > 0, "There must be at least one player to pick a winner");

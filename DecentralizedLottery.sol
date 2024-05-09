@@ -6,7 +6,10 @@ contract DecentralizedLottery {
     address public manager;
     address[] public players;
     uint public randomNumber;
-    
+
+    // Event to log when a winner is picked
+    event WinnerPicked(address winner, uint amount);
+
     modifier restricted() {
         require(msg.sender == manager, "Only the manager can call this function");
         _;
@@ -26,7 +29,6 @@ contract DecentralizedLottery {
         return uint(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, players.length)));
     }
 
-    
     function pickWinner() public restricted {
         require(players.length > 0, "There must be at least one player to pick a winner");
         
@@ -34,7 +36,11 @@ contract DecentralizedLottery {
         
         address winner = players[randomNumber];
         
-        payable(winner).transfer(address(this).balance);
+        uint prize = address(this).balance;
+        payable(winner).transfer(prize);
+        
+        // Emit the WinnerPicked event
+        emit WinnerPicked(winner, prize);
         
         players = new address[](0);
     }
